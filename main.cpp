@@ -1,412 +1,317 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define long long LL
-#define short sh
-int alegere;
-class Nod
+class Animal
 {
-private:
-    int top;
-    Nod *next;
-
+protected:
+    string specie;
 public:
-    Nod()
+    Animal();
+    Animal(string specie);
+    string getSpecie() const;
+    virtual istream& citire(istream& is)
     {
-        top = 0;
-        next = nullptr;
+        is>>specie;
     }
-
-    Nod(int inform)
+//    virtual ostream& afisare(ostream& os)
+//    {
+//        os<<specie;
+//    }
+    friend istream& operator >> (istream& is, Animal& ob)
     {
-        top = inform;
-        next = nullptr;
+        return ob.citire(is);
+        return is;
     }
-
-    ~Nod()
-    {
-        next = nullptr;
+    virtual ~Animal();
+};
+Animal::Animal()
+{
+    specie = "";
+}
+Animal::Animal(string specie):specie(specie){};
+Animal::~Animal()
+{
+    specie.clear();
+}
+string Animal::getSpecie() const {
+    return specie;
+}
+class Vertebrate : public Animal
+{
+protected:
+    string specie;
+public:
+    Vertebrate():Animal(){};
+    Vertebrate(string s = ""):Animal(s){};
+    ~Vertebrate(){
+        specie.clear();
     }
-
-    int functieinform()
+    virtual istream& citire(istream& is)
     {
-        return top;
+        is>>specie;
     }
-
-    Nod* urmatorul()
+    friend ostream& operator << (ostream& os,Vertebrate& ob)
     {
-        return next;
-    }
-
-    void set_info(int top)
-    {
-        top = top;
-    }
-
-    void set_next(Nod* urm)
-    {
-        next = urm;
+        os<<ob.specie;
+        return os;
     }
 };
-class Lista_circulara
+class Nevertebrate : public Animal
 {
-private:
-    Nod *prim;
-    int nr;
+protected:
+    string specie;
 public:
-    Lista_circulara()
-    {
-        prim = nullptr;
-        nr = 0;
+//    Nevertebrate():Animal(){};
+    Nevertebrate(string s=""):Animal(s){};
+    ~Nevertebrate() {
+        specie.clear();
     }
-
-    Lista_circulara(Nod *p, int n)
+    virtual istream& citire(istream& is)
     {
-        prim = p;
-        nr = n;
+        is>>specie;
     }
-
-    Lista_circulara(const Lista_circulara &l)
+    friend ostream& operator << (ostream& os,Nevertebrate& ob)
     {
-        nr = l.nr;
-        prim = l.prim;
-    }
-
-    ~Lista_circulara()
-    {
-        Nod *p = prim, *q;
-        while (nr)
-        {
-            q = p;
-            p = p->urmatorul();
-            delete q;
-            nr--;
-        }
-        this-> prim = nullptr;
-    }
-
-    void set_prim(Nod *p)
-    {
-        prim = p;
-    }
-
-    void set_nr(int n)
-    {
-        nr = n;
-    }
-
-    Nod* get_prim() const
-    {
-        return prim;
-    }
-
-    int get_nr() const
-    {
-        return nr;
-    }
-
-    void add(int poz, Nod *element)
-    {
-        if (nr == 0)
-        {
-            prim = element;
-            prim->set_next(prim);
-            nr++;
-        }
-        else if (poz == 0)
-        {
-            Nod *i = prim;
-            int j = 0;
-            while (j != nr - 1)
-            {
-                j++;
-                i = i->urmatorul();
-            }
-            i->set_next(element);
-            element->set_next(prim);
-            prim = element;
-            nr++;
-        }
-        else
-        {
-            Nod *i = prim;
-            int j = 0;
-            while (j != poz - 1)
-            {
-                j++;
-                i = i->urmatorul();
-            }
-
-            element->set_next(i->urmatorul());
-            i->set_next(element);
-            nr++;
-        }
-    }
-
-    friend istream &operator>>(istream &dev, Lista_circulara &l)
-    {
-        cout << "nr elem: ";
-        int numar;
-        dev >> numar;
-
-        for (int i = 0; i < numar; i++)
-        {
-            cout << "pozitie element " << i << ": ";
-            int val;
-            dev >> val;
-            Nod *element = new Nod(val);
-            l.add(i, element);
-        }
-        return dev;
-    }
-
-    void afisare_k(int k)
-    {
-        if (nr)
-        {
-            int i = 0;
-            Nod *inc = prim;
-            while (i != k)
-            {
-                i++;
-                inc = inc->urmatorul();
-            }
-
-            i = nr + 1;
-            cout << "lista: ";
-            while (i != 0)
-            {
-                cout << inc->functieinform() << " ";
-                inc = inc->urmatorul();
-                i--;
-            }
-            cout << "\n";
-        }
-        else
-            cout << "nu avem elemente!\n";
-    }
-
-    void deletef(int poz)
-    {
-        if (nr == 0)
-        {
-            cout << "lista goala nu putem sterge elemente!\n";
-        }
-        else if (nr == 1)
-        {
-            prim = nullptr;
-            nr = 0;
-        }
-        else if (poz == 0)
-        {
-            Nod *i = prim;
-            int j = 0;
-            while (j != nr - 1)
-            {
-                i = i->urmatorul();
-                j++;
-            }
-            i->set_next(prim->urmatorul());
-            prim->set_next(nullptr);
-            prim = i->urmatorul();
-            nr--;
-        }
-        else
-        {
-            Nod *i = prim, *k;
-            int j = 0;
-            while (j != poz - 1)
-            {
-                i = i->urmatorul();
-                j++;
-            }
-            k = i->urmatorul();
-            i->set_next(k->urmatorul());
-            k->set_next(nullptr);
-            nr--;
-        }
-    }
-
-    void stergere(int k)
-    {
-        if (nr)
-        {
-            int i = 0;
-            Nod *inc = prim;
-            while (i != k)
-            {
-                i++;
-                inc = inc->urmatorul();
-            }
-
-            cout << "lista:";
-            int val = inc->functieinform();
-            while (nr != 0)
-            {
-                cout << inc->functieinform() << " ";
-                inc = inc->urmatorul();
-                if (i == nr - 1 && nr != 1)
-                {
-                    deletef(i);
-                    i = 0;
-                }
-                else
-                    deletef(i);
-            }
-            cout << val << "\n";
-        }
-        else
-            cout << "lista nu are elemente!\n";
-    }
-
-    void inversare()
-    {
-        if (nr == 0)
-        {
-            cout << "lista nu are elemente!\n";
-        }
-        else
-        {
-            int i = nr;
-            Nod *current = prim;
-            Nod *prev = nullptr;
-            Nod *next = nullptr;
-            Nod *firstnode = nullptr;
-
-            next = current->urmatorul();
-            current->set_next(prev);
-            prev = current;
-            current = next;
-            firstnode = prev;
-            i--;
-
-            while (i)
-            {
-                next = current->urmatorul();
-                current->set_next(prev);
-                prev = current;
-                current = next;
-                i--;
-            }
-            firstnode->set_next(prev);
-            prim = prev;
-        }
-    }
-
-    Lista_circulara operator+(const Lista_circulara &l2)
-    {
-        Nod *firstnode;
-        Nod *p = prim;
-        Nod *element_p = new Nod(prim->functieinform()), *q;
-        firstnode = element_p;
-        q = firstnode;
-        p = p->urmatorul();
-
-        for (int i = 1; i < nr; i++)
-        {
-            Nod *element = new Nod(p->functieinform());
-            q->set_next(element);
-            q = q->urmatorul();
-            p = p->urmatorul();
-        }
-
-        p = l2.prim;
-        for (int i = 0; i < l2.nr; i++)
-        {
-            Nod *element = new Nod(p->functieinform());
-            q->set_next(element);
-            q = q->urmatorul();
-            p = p->urmatorul();
-        }
-        q->set_next(firstnode);
-        return Lista_circulara(firstnode, nr + l2.nr);
+        os<<ob.specie;
+        return os;
     }
 };
-int main()
+class Peste : public Vertebrate
 {
-    Lista_circulara l1;
-    cout << "citire:1\n afisare lista prin eliminare:2\n afisare lista:3\n adaugare element:4\n eliminare element:5\n inversare legaturi lista:6\n adunare 2 liste:7\n exit:8\n";
-    while(alegere != 8)
+protected:
+    string specie;
+    long lungime;
+public:
+//    Peste():Vertebrate(){};
+    Peste(string specie,int l):Vertebrate(specie),lungime(l){};
+    ~Peste()
     {
-        cin>>alegere;
-            if(alegere == 1)
-            {
-                cin >> l1;
-                l1.afisare_k(0);
-                break;
-            }
-
-            if(alegere == 2)
-            {
-                cout << "Pozitie stergere: ";
-                int poz;
-                cin >> poz;
-                if(poz >= 0 && poz < l1.get_nr())
-                    l1.stergere(poz);
-                else
-                    cout << "Pozitie gresita!\n";
-                break;
-            }
-
-            if(alegere == 3)
-            {
-                l1.afisare_k(0);
-                break;
-            }
-
-            if(alegere  == 4)
-            {
-                cout << "Element de adaugat: ";
-                int val, poz;
-                cin >> val;
-                cout << "Pozitia: ";
-                cin >> poz;
-                if(poz >= 0 && poz < l1.get_nr())
-                {
-                    Nod *elem = new Nod(val);
-                    l1.add(poz,elem);
-                    l1.afisare_k(0);
-                }
-                else
-                    cout << "Pozitie gresita!\n";
-                break;
-            }
-            if(alegere == 5)
-            {
-                cout << "Pozitie element de sters: ";
-                int poz;
-                cin >> poz;
-                if(poz >= 0 && poz < l1.get_nr())
-                {
-                    l1.deletef(poz);
-                    l1.afisare_k(0);
-                }
-                else
-                    cout << "Pozitie gresita!\n";
-                break;
-            }
-
-            if(alegere  == 6)
-            {
-                l1.inversare();
-                l1.afisare_k(0);
-                break;
-            }
-
-            if(alegere  == 7)
-            {
-                if(l1.get_nr() == 0)
-                    cout << "lista goala!\n";
-                else
-                {
-                    cout << "Lista care trebuie adunata:\n";
-                    Lista_circulara l2;
-                    cin >> l2;
-                    (l1 + l2).afisare_k(0);
-                }
-                break;
-            }
-        cout << "\n";
-        cout <<  "citire:1\n afisare lista prin eliminare:2\n afisare lista:3\n adaugare element:4\n eliminare element:5\n inversare legaturi lista:6\n adunare 2 liste:7\n exit:8\n";
-        cin >> alegere;
+        lungime = 0;
+        specie.clear();
     }
+    virtual int getLungime()
+    {
+        return lungime;
+    }
+    friend ostream& operator << (ostream& os,Peste& ob)
+    {
+        os<<ob.lungime;
+        return os;
+    }
+};
+class Reptila: public Vertebrate{
+protected:
+    long lungime;
+public:
+    Reptila(string specie, long lungime):Vertebrate(specie),lungime(lungime){};
+    ~Reptila()
+    {
+        lungime = 0 ;
+        specie.clear();
+    }
+};
+class Pasari : public Vertebrate
+{
+protected:
+    long lungime;
+public:
+    Pasari(string specie, long lungime):Vertebrate(specie),lungime(lungime){};
+    ~Pasari()
+    {
+        lungime = 0 ;
+        specie.clear();
+    }
+
+};
+class Mamifer : public Vertebrate
+{
+protected:
+    long lungime;
+public:
+    Mamifer(string specie, long lungime):Vertebrate(specie),lungime(lungime){};
+    ~Mamifer()
+    {
+        lungime = 0 ;
+        specie.clear();
+    }
+
+};
+template<class T>
+class AtlasZoologic{
+protected:
+    int nrAnimale;
+    vector<string>pestiRapitori;
+    list<T*>animale_tip;
+public:
+    AtlasZoologic()
+    {
+        this-> nrAnimale = 0;
+        pestiRapitori.push_back("matei");
+        pestiRapitori.push_back("tiberiu");
+        pestiRapitori.push_back("adela ... ew");
+        pestiRapitori.push_back("andrei");
+        pestiRapitori.push_back("stefan");
+        pestiRapitori.push_back("alex");
+        pestiRapitori.push_back("petrica");
+        pestiRapitori.push_back("colocviu poo");
+        pestiRapitori.push_back("vericu");
+        pestiRapitori.push_back("nelson");
+    }
+    ~AtlasZoologic();
+    int getNrAnimale()
+    {
+        return nrAnimale;
+    }
+    friend ostream& operator << (ostream& os, AtlasZoologic& ob)
+    {
+        for(typename list<T*>::iterator it = ob.animale_tip.begin() ; it!= ob.animale_tip.end(); ++it)
+            os<<(**it);
+        return os;
+    }
+    void operator += (T anim)
+    {
+        animale_tip.push_back(&anim);
+        nrAnimale ++;
+        cout<<"Animalul adaugat este: "<<endl;
+    }
+    int getPestiMari()
+    {
+        int ok = 0;
+        for(typename list<Vertebrate*>::iterator it = animale_tip.begin(); it!=animale_tip.end(); ++it)
+        {
+            Peste* p = dynamic_cast<Peste*> (*it);
+            if(p->getLungime() > 1)
+                ok++;
+        }
+        return ok;
+    }
+};
+class singleton {
+    static singleton * instanta;
+    vector<Vertebrate*> ver;
+    vector<Nevertebrate*> nev;
+    singleton()
+    {
+        cout<<"Apasa tasta x pentru o anumita operatie:"<<endl;
+        cout<<"Apasa 1 pentru a vedea ce animale sunt salvate (vertebrate sau nevertebrate)"<<endl;
+        cout<<"Apasa 2 pentru a vedea pestii mai mari de 1 m"<<endl;
+    }
+public:
+    static singleton * getInstanta()
+    {
+        if(instanta == nullptr)
+            instanta = new singleton;
+        return instanta;
+    }
+    void op1()
+    {
+        int n;
+        string tipul;
+        cout<<"Cate animale citim?"<<endl;
+        cin>>n;
+        cout<<"vertebrat sau nevertebrat?"<<endl;
+        cin>>tipul;
+        if(tipul == "vertebrat")
+        {
+            string specie;
+            int lungime;
+            cout<<"Numele tipului de peste este:"<<endl;
+            cin>>specie;
+            cout<<"Pestele are lungimea:"<<endl;
+            cin>>lungime;
+            Vertebrate * p = new Peste(specie,lungime);
+            ver.push_back(p);
+            cout<<"Afisam vertebratele stocate"<<endl;
+            for(vector<Vertebrate*>::iterator it = ver.begin(); it!=ver.end();++it)
+            {
+                cout<<(**it);
+            }
+            cout<<endl;
+        }
+        else
+        {
+            cout<<"vrem animalul:"<<endl;
+            Nevertebrate* p = new Nevertebrate();
+            cin>>*p;
+            nev.push_back(p);
+            cout<<"Afisam nevertebratele stocate"<<endl;
+            for(vector<Nevertebrate*>::iterator it = nev.begin(); it!=nev.end();++it)
+            {
+                cout<<(**it);
+            }
+            cout<<endl;
+        }
+    }
+    void op2()
+    {
+        int nr;
+        for(vector<Vertebrate*>::iterator it = ver.begin(); it!=ver.end();++it)
+        {
+            Peste * p = dynamic_cast<Peste*> (*it);
+            if(p->getLungime() > 1)
+            {
+                nr++;
+                break;//???
+            }
+        }
+        cout<<nr<<endl;
+    }
+};
+singleton * singleton::instanta = nullptr;
+
+int main() {
+    singleton *s;
+    s=singleton::getInstanta();
+    while(true)
+    {
+        try{
+            int optiune;
+            cout<<"Ce optiune doriti?"<<endl;
+            cin>>optiune;
+            if(optiune <=0 or optiune >4)
+                throw "Nu ai ales bine frate! \n";
+            if(optiune == 1)
+                s->op1();
+            else
+            if(optiune == 2)
+                s->op2();
+        }
+        catch(string s)
+        {
+            cout<<s<<endl;
+        }
+    }
+//AtlasZoologic<Vertebrate*> ver;
+//AtlasZoologic<Nevertebrate*> nev;
+//    int n;
+//    string tipul;
+//    cout<<"Cate animale citim?"<<endl;
+//    cin>>n;
+//    for(int i=1;i<=n;i++)
+//    {
+//        cout<<"vertebrat sau nevertebrat?"<<endl;
+//        cin>>tipul;
+//        if(tipul == "vertebrat")
+//        {
+//            string specie;
+//            int lungime;
+//            cout<<"Numele tipului de peste este:"<<endl;
+//            cin>>specie;
+//            cout<<"Pestele are lungimea:"<<endl;
+//            cin>>lungime;
+//            Vertebrate * p = new Peste(specie,lungime);
+//            ver += p;
+//
+//        }
+//        else
+//        {
+//            cout << "Numele animalului este ";
+//            Nevertebrate* p= new Nevertebrate();
+//            cin >> *p;
+//            nev += p;
+//        }
+//    }
+//    cout<<endl;
+//    cout<<ver<<endl;
+//    cout<<nev<<endl;
+    return 0;
 }
